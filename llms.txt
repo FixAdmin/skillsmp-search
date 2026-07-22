@@ -1,0 +1,15 @@
+# SkillsMP Search
+
+SkillsMP Search is an Agent Skill that finds and compares public skills by reading their source instructions. It supports a normal search and an explicit heavy mode.
+
+## Start here
+
+- `README.md`: purpose, installation, examples, limits, and compatibility
+- `SKILL.md`: complete agent workflow and scoring rubric
+- `examples/standard-search.md`: normal search shape
+- `examples/heavy-search.md`: maximum-depth search shape
+- `CONTRIBUTING.md`: development and contribution workflow
+
+## Runtime
+
+Node.js 18 or newer. The search CLI uses no third-party runtime packages.
