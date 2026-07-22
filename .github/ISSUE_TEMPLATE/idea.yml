@@ -1,0 +1,19 @@
+name: Improvement idea
+description: Suggest a clearer search, evaluation, or documentation workflow.
+title: "[Idea] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What would this improve?
+      description: Describe the current limitation and the user outcome you want.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Suggested approach
+      description: Include an example or tradeoff when useful.
+    validations:
+      required: true

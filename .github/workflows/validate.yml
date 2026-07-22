@@ -1,0 +1,47 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [18, 22]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Test search behavior
+        run: npm test
+
+      - name: Validate repository
+        run: npm run validate
+
+      - name: Parse PowerShell wrapper
+        shell: pwsh
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            'scripts/search-skillsmp.ps1',
+            [ref]$null,
+            [ref]$errors
+          ) > $null
+          if ($errors) {
+            $errors | Write-Error
+            exit 1
+          }

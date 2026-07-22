@@ -1,0 +1,37 @@
+name: Bug report
+description: Tell us what broke and how to reproduce it.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a problem. Please remove secrets from logs and examples.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include the command or agent request, expected result, and actual result.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Node version, and agent.
+      placeholder: Windows 11, Node 22, Codex
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Give the smallest safe example that reproduces the issue.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed API keys, tokens, and private repository details.
+          required: true
