@@ -1,6 +1,10 @@
 ---
 name: skillsmp-search
 description: Find, search, and compare public agent skills in SkillsMP by evaluating their source content, useful method delta, and alignment with current practice. Use only when the user explicitly asks to find a skill, search SkillsMP, compare available skills, or identify the best skill for a stated task.
+license: MIT
+metadata:
+  author: FixAdmin
+  version: "0.1.0"
 ---
 
 # SkillsMP Search
@@ -8,6 +12,10 @@ description: Find, search, and compare public agent skills in SkillsMP by evalua
 Run this workflow only after an explicit user request to find or compare skills. If the user did not request skill discovery, stop and continue without searching SkillsMP.
 
 Judge candidates by their actual instructions and resources. Use marketplace metadata only to retrieve and shortlist candidates.
+
+## Runtime
+
+Search requires Node.js 18 or newer and internet access to SkillsMP and GitHub. `SKILLSMP_API_KEY` is optional; authenticated searches receive higher API limits.
 
 ## 1. Define the need
 
@@ -49,8 +57,8 @@ Use standard mode unless the user explicitly requests `heavy`, `deep search`, `�
 In heavy mode, keep the same evaluation criteria and safety boundaries but expand retrieval and source inspection:
 
 1. Generate 10–12 English queries covering the canonical capability, exact phrase, synonyms, desired outcome, technical variants, adjacent modern terminology, and likely gaps in a first-pass search.
-2. Run the complete query set with `-SortBy stars`, `-LimitPerQuery 50`, and `-MaxCandidates 200`.
-3. Run the same query set separately with `-SortBy recent`, `-LimitPerQuery 50`, and `-MaxCandidates 200`.
+2. Run the complete query set with `--sort-by stars`, `--limit-per-query 50`, and `--max-candidates 200`.
+3. Run the same query set separately with `--sort-by recent`, `--limit-per-query 50`, and `--max-candidates 200`.
 4. Treat each query in each sort order as one SkillsMP API request. A full heavy search therefore uses 20–24 requests; never exceed 24.
 5. Merge both script outputs by normalized `githubUrl`, falling back to the candidate ID when the source URL is missing. Normalize URL casing, trailing slashes, and links that differ only by a terminal `SKILL.md` segment. Cap the combined pool at 250 unique candidates.
 6. Group localized copies, forks, and substantially identical workflows before shortlisting so one skill family cannot dominate the pool.
@@ -63,16 +71,28 @@ With an authenticated API key, 20–24 requests stay within the documented 30-re
 
 ## 3. Retrieve and merge candidates
 
-Run the bundled script from this skill directory:
+Run the bundled cross-platform script from this skill directory:
+
+```bash
+node scripts/search-skillsmp.mjs \
+  --query '"react accessibility"' \
+  --query 'react accessibility' \
+  --query 'react a11y' \
+  --query 'WCAG React audit' \
+  --limit-per-query 20 \
+  --max-candidates 40
+```
+
+The script reads `SKILLSMP_API_KEY` from the environment, calls SkillsMP once per query, normalizes duplicate GitHub URLs, and returns JSON. Never print or copy the key into commands or files.
+
+On Windows, `scripts/search-skillsmp.ps1` remains available as a thin wrapper around the same Node implementation:
 
 ```powershell
 & scripts/search-skillsmp.ps1 `
-  -Query @('"react accessibility"', 'react accessibility', 'react a11y', 'WCAG React audit') `
+  -Query @('"react accessibility"', 'react a11y') `
   -LimitPerQuery 20 `
   -MaxCandidates 40
 ```
-
-The script reads `SKILLSMP_API_KEY` from the environment, calls SkillsMP once per query, merges duplicate GitHub URLs, and returns JSON. Never print or copy the key into commands or files.
 
 Use `sortBy=stars` for the main retrieval. Repository stars measure repository popularity, not skill quality; use them only as a weak tie-breaker. Run a separate `-SortBy recent` search only when the user requests new skills or the technology changes quickly.
 
@@ -136,14 +156,14 @@ Name one primary recommendation and explain why its content fits better than the
 
 Searching and evaluation must not install a skill. Install only after the user selects a candidate and explicitly requests installation.
 
-Install discovered skills into the active Git repository, never into global Codex skill locations. Codex officially discovers repository skills under `$REPO_ROOT/.agents/skills`. Do not install to `$CODEX_HOME/skills`, `~/.codex/skills`, `$HOME/.agents/skills`, or any other user-wide location. Never omit the installer's `--dest` argument and never fall back to its global default.
+Install discovered skills into the active Git repository, never into a global agent directory. Use the cross-platform `skills` CLI from the target repository. Its default scope is the current project; never pass `--global` or `-g` unless the user explicitly asks for a global installation.
 
-Run the bundled project installer from this skill directory:
+After the user selects a candidate and approves installation, run:
 
-```powershell
-& scripts/install-project-skill.ps1 -Url '<candidate GitHub URL>'
+```bash
+npx skills add '<candidate GitHub URL>' --agent '<active-agent>' --yes
 ```
 
-The script resolves the active repository with `git rev-parse --show-toplevel`, normalizes GitHub links that point directly to `SKILL.md`, checks the destination name before writing, and invokes the system `skill-installer` with `--dest $REPO_ROOT/.agents/skills`. When the current directory is not inside a Git repository, stop and ask the user for the project repository path; do not choose a global destination. Pass an explicitly supplied repository path with `-ProjectRoot`.
+Choose the agent identifier from the CLI's supported-agent list, such as `codex`, `claude-code`, or `cursor`. When the current directory is not inside the intended Git repository, stop and ask the user for the project path. Do not choose a global destination as a fallback.
 
-After installation, verify that `$REPO_ROOT/.agents/skills/<skill-name>/SKILL.md` exists and report that exact project-local path. Codex normally detects new skills automatically; if it does not appear, tell the user to restart Codex.
+After installation, verify the exact project-local path reported by the CLI and confirm that `<skill-name>/SKILL.md` exists. For Codex, the expected path is `$REPO_ROOT/.agents/skills/<skill-name>/SKILL.md`. If the active agent does not detect the new skill, tell the user to restart that agent.

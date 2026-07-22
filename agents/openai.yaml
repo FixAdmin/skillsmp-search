@@ -1,4 +1,4 @@
 interface:
   display_name: "SkillsMP Search"
-  short_description: "Find modern, high-value SkillsMP skills"
-  default_prompt: "Use $skillsmp-search to find a skill that adds useful modern methods for my task."
+  short_description: "Find skills by reading what they actually do"
+  default_prompt: "Use $skillsmp-search to explore this topic and recommend the most useful skill stack for my task."
