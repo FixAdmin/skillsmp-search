@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">SkillsMP Search mark</title>
+  <desc id="desc">A magnifying glass inspecting a skill card</desc>
+  <rect width="256" height="256" rx="52" fill="#0B1020"/>
+  <rect x="46" y="42" width="112" height="144" rx="18" fill="#101B34" stroke="#5EEBFF" stroke-width="8"/>
+  <path d="M72 78h60M72 106h42M72 134h56" fill="none" stroke="#C7FF4A" stroke-linecap="round" stroke-width="10"/>
+  <circle cx="158" cy="150" r="42" fill="#0B1020" fill-opacity=".88" stroke="#FF6B6B" stroke-width="10"/>
+  <path d="m188 180 32 32" fill="none" stroke="#FF6B6B" stroke-linecap="round" stroke-width="14"/>
+  <path d="m142 151 11 11 22-27" fill="none" stroke="#C7FF4A" stroke-linecap="round" stroke-linejoin="round" stroke-width="9"/>
+</svg>

@@ -22,6 +22,10 @@ Marketplace metadata can find candidates. SkillsMP Search reads the source, remo
 - Explains why the winner fits, where it falls short, and when to use an alternative.
 - Never runs code from candidate repositories during evaluation.
 
+<p align="center">
+  <img src="assets/demo.gif" alt="Animated scan moving across SkillsMP candidate cards, source inspection, rejected duplicates, and finalists" width="960">
+</p>
+
 ## Install
 
 The easiest route works across the Agent Skills ecosystem:
