@@ -9,7 +9,7 @@ import {
   normalizeCandidateKey,
   parseArgs,
   runSearch,
-} from "../scripts/search-skillsmp.mjs";
+} from "../skills/skillsmp-search/scripts/search-skillsmp.mjs";
 
 test("parseArgs accepts repeated queries and defaults", () => {
   assert.deepEqual(
@@ -204,7 +204,10 @@ test("runSearch rejects unsuccessful and malformed responses", async () => {
 
 test("CLI argument failures stay concise", () => {
   const script = fileURLToPath(
-    new URL("../scripts/search-skillsmp.mjs", import.meta.url),
+    new URL(
+      "../skills/skillsmp-search/scripts/search-skillsmp.mjs",
+      import.meta.url,
+    ),
   );
   const result = spawnSync(
     process.execPath,

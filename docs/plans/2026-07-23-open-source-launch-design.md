@@ -46,7 +46,7 @@ The copy will use short paragraphs, concrete examples, and honest limits. It wil
 
 Node.js 18 or newer will become the canonical runtime because the recommended `npx skills add` installation path already requires Node.js. The search implementation will use only built-in Node APIs.
 
-`scripts/search-skillsmp.mjs` will own query execution, result normalization, deduplication, ranking, and JSON output. `scripts/search-skillsmp.ps1` will remain as a thin Windows-compatible wrapper that forwards arguments to the Node script. This preserves the familiar PowerShell entry point without maintaining two search implementations.
+`skills/skillsmp-search/scripts/search-skillsmp.mjs` will own query execution, result normalization, deduplication, ranking, and JSON output. The adjacent PowerShell script will remain as a thin Windows-compatible wrapper that forwards arguments to the Node script. This preserves the familiar PowerShell entry point without maintaining two search implementations.
 
 Installation of a selected third-party skill will use the cross-platform `skills` CLI. The skill will still require explicit user approval before installation and will default to project scope.
 
@@ -75,12 +75,13 @@ The Node port must preserve these limits and the existing JSON shape.
 
 ```text
 skillsmp-search/
-|-- SKILL.md
-|-- agents/openai.yaml
-|-- scripts/
-|   |-- search-skillsmp.mjs
-|   |-- search-skillsmp.ps1
-|   `-- install-project-skill.ps1
+|-- skills/
+|   `-- skillsmp-search/
+|       |-- SKILL.md
+|       |-- agents/openai.yaml
+|       `-- scripts/
+|           |-- search-skillsmp.mjs
+|           `-- search-skillsmp.ps1
 |-- tests/
 |-- examples/
 |-- assets/
@@ -92,7 +93,7 @@ skillsmp-search/
 `-- LICENSE
 ```
 
-The root-level `SKILL.md` keeps the repository discoverable by the `skills` CLI and compatible with the Agent Skills specification.
+The standard `skills/skillsmp-search/` container keeps the repository discoverable while preventing README assets, CI files, and project documentation from being copied into each installation.
 
 ## Installation and compatibility
 

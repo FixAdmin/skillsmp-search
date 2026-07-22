@@ -5,7 +5,7 @@ SkillsMP Search is an Agent Skill that finds and compares public skills by readi
 ## Start here
 
 - `README.md`: purpose, installation, examples, limits, and compatibility
-- `SKILL.md`: complete agent workflow and scoring rubric
+- `skills/skillsmp-search/SKILL.md`: complete agent workflow and scoring rubric
 - `examples/standard-search.md`: normal search shape
 - `examples/heavy-search.md`: maximum-depth search shape
 - `CONTRIBUTING.md`: development and contribution workflow

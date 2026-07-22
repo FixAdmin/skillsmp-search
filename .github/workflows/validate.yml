@@ -37,7 +37,7 @@ jobs:
         run: |
           $errors = $null
           [System.Management.Automation.Language.Parser]::ParseFile(
-            'scripts/search-skillsmp.ps1',
+            'skills/skillsmp-search/scripts/search-skillsmp.ps1',
             [ref]$null,
             [ref]$errors
           ) > $null

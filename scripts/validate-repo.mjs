@@ -25,21 +25,22 @@ function requireFiles(paths) {
 }
 
 function validateSkill() {
-  const skill = read("SKILL.md").toString("utf8");
+  const skillPath = "skills/skillsmp-search/SKILL.md";
+  const skill = read(skillPath).toString("utf8");
   const match = skill.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n/);
   if (!match) {
-    fail("SKILL.md has no YAML frontmatter.");
+    fail(`${skillPath} has no YAML frontmatter.`);
     return;
   }
   if (!/^name:\s*skillsmp-search\s*$/m.test(match[1])) {
-    fail("SKILL.md name must be skillsmp-search.");
+    fail(`${skillPath} name must be skillsmp-search.`);
   }
   const description = match[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
   if (!description || description.length > 1024) {
-    fail("SKILL.md description must contain 1-1024 characters.");
+    fail(`${skillPath} description must contain 1-1024 characters.`);
   }
   if (!/^license:\s*MIT\s*$/m.test(match[1])) {
-    fail("SKILL.md must declare the MIT license.");
+    fail(`${skillPath} must declare the MIT license.`);
   }
 }
 
@@ -126,13 +127,13 @@ function validateReadmeLinks() {
 }
 
 requireFiles([
-  "SKILL.md",
+  "skills/skillsmp-search/SKILL.md",
   "README.md",
   "LICENSE",
   "CONTRIBUTING.md",
   "SECURITY.md",
-  "scripts/search-skillsmp.mjs",
-  "scripts/search-skillsmp.ps1",
+  "skills/skillsmp-search/scripts/search-skillsmp.mjs",
+  "skills/skillsmp-search/scripts/search-skillsmp.ps1",
   "assets/hero.png",
   "assets/demo.gif",
   "assets/social-preview.png",

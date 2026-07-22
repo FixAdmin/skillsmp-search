@@ -95,7 +95,7 @@ A polished skill with no meaningful method delta cannot score above 60.
 Most people should invoke the skill through their agent. For debugging or integration, the bundled CLI prints JSON:
 
 ```bash
-node scripts/search-skillsmp.mjs \
+node skills/skillsmp-search/scripts/search-skillsmp.mjs \
   --query '"prompt engineering"' \
   --query 'developer documentation' \
   --limit-per-query 20 \
@@ -105,7 +105,7 @@ node scripts/search-skillsmp.mjs \
 Windows users can keep the familiar PowerShell entry point. It calls the same Node implementation:
 
 ```powershell
-& scripts/search-skillsmp.ps1 `
+& skills/skillsmp-search/scripts/search-skillsmp.ps1 `
   -Query @('"prompt engineering"', 'developer documentation') `
   -LimitPerQuery 20 `
   -MaxCandidates 40
