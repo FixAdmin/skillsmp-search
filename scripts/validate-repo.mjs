@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, extname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -62,13 +62,6 @@ function validateAssets() {
   const hero = pngDimensions("assets/hero.png");
   if (hero && hero.width / hero.height !== 2) {
     fail("assets/hero.png must use a 2:1 ratio.");
-  }
-  const gif = read("assets/demo.gif");
-  if (!gif.subarray(0, 6).toString("ascii").startsWith("GIF8")) {
-    fail("assets/demo.gif is not a GIF file.");
-  }
-  if (statSync(resolve(root, "assets/demo.gif")).size > 2_000_000) {
-    fail("assets/demo.gif must stay under 2 MB.");
   }
 }
 
@@ -135,7 +128,6 @@ requireFiles([
   "skills/skillsmp-search/scripts/search-skillsmp.mjs",
   "skills/skillsmp-search/scripts/search-skillsmp.ps1",
   "assets/hero.png",
-  "assets/demo.gif",
   "assets/social-preview.png",
   "assets/mark.svg",
 ]);
