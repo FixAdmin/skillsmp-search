@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   buildSearchUrl,
@@ -198,4 +200,19 @@ test("runSearch rejects unsuccessful and malformed responses", async () => {
     }),
     /invalid response/,
   );
+});
+
+test("CLI argument failures stay concise", () => {
+  const script = fileURLToPath(
+    new URL("../scripts/search-skillsmp.mjs", import.meta.url),
+  );
+  const result = spawnSync(
+    process.execPath,
+    [script, "--query", "x", "--sort-by", "invalid"],
+    { encoding: "utf8" },
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /^SkillsMP search failed:/);
+  assert.equal(result.stderr.includes("    at "), false);
 });
