@@ -3,7 +3,7 @@ name: skillsmp-search
 description: Find, search, and compare public agent skills in SkillsMP by evaluating their source content, useful method delta, and alignment with current practice. Use only when the user explicitly asks to find a skill, search SkillsMP, compare available skills, or identify the best skill for a stated task.
 ---
 
-# SkillsMP Search
+# SkillsMP Research
 
 Run this workflow only after an explicit user request to find or compare skills. If the user did not request skill discovery, stop and continue without searching SkillsMP.
 

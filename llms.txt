@@ -1,6 +1,6 @@
-# SkillsMP Search
+# SkillsMP Research
 
-SkillsMP Search is an Agent Skill that finds and compares public skills by reading their source instructions. It supports a normal search and an explicit heavy mode.
+SkillsMP Research is an Agent Skill that finds and compares public skills by reading their source instructions. It supports a normal search and an explicit heavy mode.
 
 ## Start here
 

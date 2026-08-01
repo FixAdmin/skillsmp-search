@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/hero.png" alt="SkillsMP Search arcade showing skill cards moving from search to source inspection and final recommendations" width="100%">
+  <img src="assets/hero.png" alt="SkillsMP Research arcade showing skill cards moving from search to source inspection and final recommendations" width="100%">
 </p>
 
-# SkillsMP Search
+# SkillsMP Research by AIW
 
 [![Validate](https://github.com/FixAdmin/skillsmp-search/actions/workflows/validate.yml/badge.svg)](https://github.com/FixAdmin/skillsmp-search/actions/workflows/validate.yml)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-C7FF4A)](https://agentskills.io)
@@ -11,7 +11,9 @@
 
 > **Need to explore a topic or build the right skill stack for a task? This skill is for you.**
 
-Marketplace metadata can find candidates. SkillsMP Search reads the source, removes duplicates, compares the methods, and tells you what is actually useful.
+Marketplace metadata can find candidates. SkillsMP Research reads the source, removes duplicates, compares the methods, and tells you what is actually useful.
+
+SkillsMP Research is an independent project that uses SkillsMP; it is not affiliated with or endorsed by SkillsMP.
 
 ## What it does
 
@@ -185,4 +187,4 @@ For security problems, please follow [SECURITY.md](SECURITY.md) instead of openi
 
 ## License
 
-SkillsMP Search is available under the [MIT License](LICENSE).
+SkillsMP Research is available under the [MIT License](LICENSE).

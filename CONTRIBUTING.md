@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping SkillsMP Search make better recommendations.
+Thanks for helping SkillsMP Research make better recommendations.
 
 Useful contributions include ranking edge cases, clearer evaluation rules, portability fixes, documentation improvements, and tests for unexpected SkillsMP responses.
 

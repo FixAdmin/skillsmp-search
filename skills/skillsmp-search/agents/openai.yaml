@@ -1,4 +1,4 @@
 interface:
-  display_name: "SkillsMP Search"
+  display_name: "SkillsMP Research by AIW"
   short_description: "Find skills by reading what they actually do"
   default_prompt: "Use $skillsmp-search to explore this topic and recommend the most useful skill stack for my task."
