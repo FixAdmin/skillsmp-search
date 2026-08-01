@@ -3,8 +3,8 @@
 import { randomBytes } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
 
+import { isMainModule } from "./cli-entry.mjs";
 import {
   buildCapsule,
   CAPSULE_VERSION,
@@ -439,7 +439,7 @@ async function main(argv) {
   }
 }
 
-const isMain = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+const isMain = isMainModule(import.meta.url);
 if (isMain) {
   if (Number(process.versions.node.split(".")[0]) < 18) {
     process.stderr.write("SkillsMP inspection failed: Node.js 18 or newer is required.\n");

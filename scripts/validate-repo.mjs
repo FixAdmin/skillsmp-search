@@ -124,6 +124,7 @@ requireFiles([
   "SECURITY.md",
   "skills/skillsmp-search/scripts/search-skillsmp.mjs",
   "skills/skillsmp-search/scripts/search-skillsmp.ps1",
+  "skills/skillsmp-search/scripts/cli-entry.mjs",
   "skills/skillsmp-search/scripts/heavy-search-state.mjs",
   "skills/skillsmp-search/references/heavy-mode.md",
   "skills/skillsmp-search/scripts/inspect-skillsmp.mjs",

@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
-
+import { isMainModule } from "./cli-entry.mjs";
 import { createHeavySearchStore } from "./heavy-search-state.mjs";
 
 const BASE_URL = "https://skillsmp.com/api/v1/skills/search";
@@ -280,9 +278,7 @@ export async function runSearch(options, dependencies = {}) {
   };
 }
 
-const isMain =
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+const isMain = isMainModule(import.meta.url);
 
 if (isMain) {
   if (Number(process.versions.node.split(".")[0]) < 18) {

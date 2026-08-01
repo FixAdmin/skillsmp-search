@@ -12,7 +12,8 @@ import {
 } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join, normalize, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+
+import { isMainModule } from "./cli-entry.mjs";
 
 const SCHEMA_VERSION = 1;
 const SEARCH_ID_PATTERN = /^\d{8}T\d{6}Z-[0-9a-f]{8}$/;
@@ -1260,7 +1261,7 @@ async function runCli(argv) {
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 
-const isMain = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+const isMain = isMainModule(import.meta.url);
 
 if (isMain) {
   if (Number(process.versions.node.split(".")[0]) < 18) {
