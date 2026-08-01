@@ -18,6 +18,8 @@ Total                      = 24 requests
 
 The two passes are normalized by GitHub URL, deduplicated by skill family, and capped at 250 unique candidates.
 
+Every successful query response is saved before the next request. After an interruption, the agent resumes the same search ID and skips completed queries.
+
 ## Inspection
 
 The evaluator reduces the pool to 40–60 plausible candidates, then fully inspects 20–25 finalists. It compares the leaders pairwise so one family of near-identical skills cannot dominate the result.

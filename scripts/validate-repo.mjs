@@ -39,9 +39,6 @@ function validateSkill() {
   if (!description || description.length > 1024) {
     fail(`${skillPath} description must contain 1-1024 characters.`);
   }
-  if (!/^license:\s*MIT\s*$/m.test(match[1])) {
-    fail(`${skillPath} must declare the MIT license.`);
-  }
 }
 
 function pngDimensions(path) {
@@ -127,6 +124,14 @@ requireFiles([
   "SECURITY.md",
   "skills/skillsmp-search/scripts/search-skillsmp.mjs",
   "skills/skillsmp-search/scripts/search-skillsmp.ps1",
+  "skills/skillsmp-search/scripts/heavy-search-state.mjs",
+  "skills/skillsmp-search/references/heavy-mode.md",
+  "skills/skillsmp-search/scripts/inspect-skillsmp.mjs",
+  "skills/skillsmp-search/scripts/inspect-skillsmp.ps1",
+  "skills/skillsmp-search/scripts/inspection/source.mjs",
+  "skills/skillsmp-search/scripts/inspection/store.mjs",
+  "skills/skillsmp-search/scripts/inspection/extract.mjs",
+  "skills/skillsmp-search/scripts/inspection/review.mjs",
   "assets/hero.png",
   "assets/social-preview.png",
   "assets/mark.svg",

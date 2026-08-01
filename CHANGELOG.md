@@ -2,6 +2,13 @@
 
 All notable changes appear here.
 
+## Unreleased
+
+### Added
+
+- Portable Node.js checkpoints for explicit heavy searches, including interrupted-run recovery and zero repeated requests for completed work.
+- Compact candidate indexing and batch import for source acquisition, semantic reviews, and scores.
+
 ## 0.1.0 - 2026-07-23
 
 ### Added

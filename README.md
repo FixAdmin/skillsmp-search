@@ -58,6 +58,8 @@ Use heavy mode to find skills for evaluating production AI agents.
 
 Heavy mode never activates just because a topic looks difficult. You have to ask for `heavy`, `deep search`, `глубокий поиск`, or equivalent maximum-depth wording.
 
+Heavy searches keep a local checkpoint as they run. If the agent's context is compacted or the process is interrupted, it can continue from saved API responses and source capsules instead of starting over.
+
 ## Standard and heavy mode
 
 | | Standard | Heavy |
@@ -108,6 +110,55 @@ Windows users can keep the familiar PowerShell entry point. It calls the same No
 ```
 
 Set `SKILLSMP_API_KEY` in your environment for authenticated limits. The script never writes or prints the key.
+
+### Inspect a shortlist in one pass
+
+Put the finalists you selected from the search output into `finalists.json`:
+
+```json
+{
+  "candidates": [
+    {
+      "name": "Example skill",
+      "githubUrl": "https://github.com/owner/repository/tree/main/skills/example"
+    }
+  ]
+}
+```
+
+Then fetch and inspect every selected `SKILL.md` together:
+
+```bash
+node skills/skillsmp-search/scripts/inspect-skillsmp.mjs \
+  --input finalists.json \
+  --output inspection.json \
+  --run-id my-search \
+  --resume
+```
+
+On PowerShell, the equivalent command is:
+
+```powershell
+& skills/skillsmp-search/scripts/inspect-skillsmp.ps1 `
+  -InputPath finalists.json `
+  -OutputPath inspection.json `
+  -RunId my-search `
+  -Resume
+```
+
+The first run saves immutable source bytes, extracted facts, compact evidence capsules, one checkpoint per candidate, and `inspection.review-index.json`. An agent reads the smaller review index first and opens full capsules only for plausible or uncertain candidates. Repeating the command with the same run ID resumes from those files and does not download completed sources again.
+
+Heavy-mode automation uses the same Node runtime for its search state, candidate index, and progress checkpoint. The complete agent-facing workflow lives in [`references/heavy-mode.md`](skills/skillsmp-search/references/heavy-mode.md).
+
+Cache objects and active checkpoints are durable. Rendered inspection and review-index files can be regenerated after completion. The tool never deletes them automatically.
+
+The run is complete only when:
+
+```text
+successful capsules + terminal failures = canonical selected candidates
+```
+
+Candidate repositories are treated as untrusted input. The inspector reads `SKILL.md` as text and never executes its commands, scripts, or installers.
 
 ## API budget
 

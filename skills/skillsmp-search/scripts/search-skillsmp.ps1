@@ -10,7 +10,12 @@ param(
     [string]$SortBy = 'stars',
 
     [ValidateRange(1, 200)]
-    [int]$MaxCandidates = 40
+    [int]$MaxCandidates = 40,
+
+    [ValidatePattern('^\d{8}T\d{6}Z-[0-9a-f]{8}$')]
+    [string]$HeavySearchId,
+
+    [switch]$RetryAmbiguous
 )
 
 Set-StrictMode -Version Latest
@@ -35,6 +40,8 @@ $arguments += @(
     '--sort-by', $SortBy,
     '--max-candidates', [string]$MaxCandidates
 )
+if ($HeavySearchId) { $arguments += @('--heavy-search-id', $HeavySearchId) }
+if ($RetryAmbiguous) { $arguments += '--retry-ambiguous' }
 
 & $node.Source $script @arguments
 if ($LASTEXITCODE -ne 0) {

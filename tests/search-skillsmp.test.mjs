@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -10,6 +13,7 @@ import {
   parseArgs,
   runSearch,
 } from "../skills/skillsmp-search/scripts/search-skillsmp.mjs";
+import { createHeavySearchStore } from "../skills/skillsmp-search/scripts/heavy-search-state.mjs";
 
 test("parseArgs accepts repeated queries and defaults", () => {
   assert.deepEqual(
@@ -24,6 +28,8 @@ test("parseArgs accepts repeated queries and defaults", () => {
       limitPerQuery: 20,
       sortBy: "stars",
       maxCandidates: 40,
+      heavySearchId: null,
+      retryAmbiguous: false,
     },
   );
 });
@@ -200,6 +206,92 @@ test("runSearch rejects unsuccessful and malformed responses", async () => {
     }),
     /invalid response/,
   );
+});
+
+test("heavy search resumes saved queries without repeating completed requests", async () => {
+  const root = await mkdtemp(join(tmpdir(), "skillsmp-search-heavy-"));
+  let tick = 0;
+  const heavyStore = createHeavySearchStore({
+    stateRoot: root,
+    now: () => new Date(Date.UTC(2026, 7, 2, 13, 0, tick++)).toISOString(),
+    randomHex: () => "abc12345",
+  });
+  const queries = ["one", "two"];
+  const { searchId } = await heavyStore.start({ request: "fixture", cwd: root, queries });
+  await heavyStore.prepareQueryDispatch({ searchId, sortBy: "stars", query: "one" });
+  await heavyStore.recordQueryResponse({
+    searchId,
+    sortBy: "stars",
+    query: "one",
+    payload: { success: true, data: { skills: [{ id: "one", name: "One" }] } },
+  });
+
+  const calls = [];
+  const output = await runSearch(
+    {
+      queries,
+      limitPerQuery: 50,
+      sortBy: "stars",
+      maxCandidates: 200,
+      heavySearchId: searchId,
+      retryAmbiguous: false,
+    },
+    {
+      heavyStore,
+      fetchImpl: async (url) => {
+        calls.push(String(url));
+        return {
+          ok: true,
+          status: 200,
+          async json() {
+            return { success: true, data: { skills: [{ id: "two", name: "Two" }] } };
+          },
+        };
+      },
+    },
+  );
+
+  assert.equal(calls.length, 1);
+  assert.match(calls[0], /q=two/);
+  assert.equal(output.completedThisRun, 1);
+  assert.equal(output.skippedRequests, 1);
+
+  calls.length = 0;
+  const resumed = await runSearch(
+    {
+      queries,
+      limitPerQuery: 50,
+      sortBy: "stars",
+      maxCandidates: 200,
+      heavySearchId: searchId,
+      retryAmbiguous: false,
+    },
+    { heavyStore, fetchImpl: async () => { calls.push("unexpected"); } },
+  );
+  assert.equal(calls.length, 0);
+  assert.equal(resumed.skippedRequests, 2);
+});
+
+test("heavy query-plan mismatch fails before any network request", async () => {
+  const root = await mkdtemp(join(tmpdir(), "skillsmp-search-plan-"));
+  const heavyStore = createHeavySearchStore({ stateRoot: root });
+  const { searchId } = await heavyStore.start({ request: "fixture", cwd: root, queries: ["saved"] });
+  let calls = 0;
+  await assert.rejects(
+    runSearch(
+      {
+        queries: ["different"],
+        limitPerQuery: 50,
+        sortBy: "stars",
+        maxCandidates: 200,
+        heavySearchId: searchId,
+        retryAmbiguous: false,
+      },
+      { heavyStore, fetchImpl: async () => { calls += 1; } },
+    ),
+    /do not match the saved query plan/,
+  );
+  assert.equal(calls, 0);
 });
 
 test("CLI argument failures stay concise", () => {

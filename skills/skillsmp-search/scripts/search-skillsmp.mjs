@@ -3,6 +3,8 @@
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { createHeavySearchStore } from "./heavy-search-state.mjs";
+
 const BASE_URL = "https://skillsmp.com/api/v1/skills/search";
 
 function parseInteger(value, name, minimum, maximum) {
@@ -53,10 +55,16 @@ export function parseArgs(argv) {
     limitPerQuery: 20,
     sortBy: "stars",
     maxCandidates: 40,
+    heavySearchId: null,
+    retryAmbiguous: false,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
+    if (flag === "--retry-ambiguous") {
+      options.retryAmbiguous = true;
+      continue;
+    }
     const value = argv[index + 1];
     if (value === undefined) {
       throw new Error(`Missing value for ${flag}.`);
@@ -86,6 +94,8 @@ export function parseArgs(argv) {
         1,
         200,
       );
+    } else if (flag === "--heavy-search-id") {
+      options.heavySearchId = value;
     } else {
       throw new Error(`Unknown argument: ${flag}`);
     }
@@ -162,8 +172,38 @@ export async function runSearch(options, dependencies = {}) {
       ? String(message).split(apiKey).join("[REDACTED]")
       : String(message);
   const responses = [];
+  const heavyStore = options.heavySearchId
+    ? dependencies.heavyStore ?? createHeavySearchStore()
+    : null;
+  let completedThisRun = 0;
+  let skippedRequests = 0;
+  let retriedAmbiguous = 0;
+
+  if (heavyStore) {
+    await heavyStore.assertPlan(options.heavySearchId, options.queries);
+  }
 
   for (const query of options.queries) {
+    if (heavyStore) {
+      const dispatch = await heavyStore.prepareQueryDispatch({
+        searchId: options.heavySearchId,
+        sortBy: options.sortBy,
+        query,
+        retryAmbiguous: options.retryAmbiguous,
+      });
+      if (dispatch.status === "completed") {
+        skippedRequests += 1;
+        continue;
+      }
+      if (dispatch.status === "ambiguous") {
+        throw new Error(
+          `Query "${query}" has an unresolved prior dispatch. No request was made. ` +
+          "Use --retry-ambiguous only if a possible duplicate API request is acceptable.",
+        );
+      }
+      if (dispatch.retriedAmbiguous) retriedAmbiguous += 1;
+    }
+
     try {
       const response = await fetchImpl(
         buildSearchUrl(query, options.limitPerQuery, options.sortBy),
@@ -178,13 +218,52 @@ export async function runSearch(options, dependencies = {}) {
         throw new Error("SkillsMP returned an invalid response.");
       }
 
-      responses.push({ query, skills: payload.data.skills });
+      if (heavyStore) {
+        await heavyStore.recordQueryResponse({
+          searchId: options.heavySearchId,
+          sortBy: options.sortBy,
+          query,
+          payload,
+        });
+        completedThisRun += 1;
+      } else {
+        responses.push({ query, skills: payload.data.skills });
+      }
     } catch (error) {
       const message = error?.message ?? error;
+      if (heavyStore) {
+        await heavyStore.recordQueryFailure({
+          searchId: options.heavySearchId,
+          sortBy: options.sortBy,
+          query,
+          message: sanitize(message),
+        });
+      }
       throw new Error(
         `Request failed for query "${query}": ${sanitize(message)}`,
       );
     }
+  }
+
+  if (heavyStore) {
+    const finished = await heavyStore.finishRetrieval({
+      searchId: options.heavySearchId,
+      sortBy: options.sortBy,
+      maxCandidates: options.maxCandidates,
+      limitPerQuery: options.limitPerQuery,
+    });
+    return {
+      mode: "heavy",
+      searchId: options.heavySearchId,
+      sortBy: options.sortBy,
+      completedThisRun,
+      skippedRequests,
+      retriedAmbiguous,
+      candidateCount: finished.candidateCount,
+      artifactPath: finished.artifactPath,
+      checkpointPath: finished.checkpointPath,
+      nextStep: finished.nextStep,
+    };
   }
 
   const candidates = mergeSearchResponses(

@@ -26,10 +26,10 @@ This project has no runtime npm dependencies.
 
 ```bash
 npm test
-python path/to/quick_validate.py skills/skillsmp-search
+npm run validate
 ```
 
-The second command uses the validator bundled with Codex's `skill-creator`. If you do not have it, CI will still validate the submitted skill.
+If you use Codex, you can also run the validator bundled with its `skill-creator` skill. It is an extra packaging check, not a runtime requirement.
 
 ## Writing rules
 

@@ -35,13 +35,19 @@ jobs:
       - name: Parse PowerShell wrapper
         shell: pwsh
         run: |
-          $errors = $null
-          [System.Management.Automation.Language.Parser]::ParseFile(
+          $files = @(
             'skills/skillsmp-search/scripts/search-skillsmp.ps1',
-            [ref]$null,
-            [ref]$errors
-          ) > $null
-          if ($errors) {
-            $errors | Write-Error
-            exit 1
+            'skills/skillsmp-search/scripts/inspect-skillsmp.ps1'
+          )
+          foreach ($file in $files) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $file,
+              [ref]$null,
+              [ref]$errors
+            ) > $null
+            if ($errors) {
+              $errors | Write-Error
+              exit 1
+            }
           }
